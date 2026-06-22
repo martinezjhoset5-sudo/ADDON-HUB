@@ -29,20 +29,20 @@
             padding: 0; 
             font-family: 'Rajdhani', sans-serif; 
             letter-spacing: 0.5px;
-            -webkit-tap-highlight-color: transparent; /* Elimina el flash azul al tocar en móvil */
+            -webkit-tap-highlight-color: transparent;
         }
         
         body { 
             background-color: var(--bg-matrix); 
             color: var(--text-main); 
-            padding-bottom: 90px; /* Espacio para la barra de navegación inferior móvil */
+            padding-bottom: 90px; 
             min-height: 100vh; 
             overflow-x: hidden;
         }
 
         .app-container { 
             width: 100%; 
-            max-width: 480px; /* Ancho máximo estándar de un smartphone */
+            max-width: 480px; 
             margin: 0 auto; 
             position: relative; 
         }
@@ -98,7 +98,6 @@
 
         h2, h3 { font-family: 'Orbitron', sans-serif; padding: 0 20px; font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
         
-        /* Ajuste de Grid a 2 columnas fijas en móvil */
         .addon-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 20px 20px 20px; }
         .addon-card { background: var(--panel-bg); border: 1px solid var(--border-glow); border-radius: 8px; overflow: hidden; backdrop-filter: blur(10px); }
         .addon-card img { width: 100%; height: 110px; object-fit: cover; }
@@ -113,19 +112,25 @@
         .form-group label { font-family: 'Orbitron', sans-serif; font-size: 11px; text-transform: uppercase; color: var(--neon-secondary); }
         input[type="text"], input[type="email"], input[type="password"], textarea, select { width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-glow); color: var(--text-main); border-radius: 8px; outline: none; font-size: 15px; -webkit-appearance: none; }
         
-        /* Botón de subida estilizado para touch */
-        .file-upload-wrapper { border: 2px dashed var(--border-glow); padding: 15px; text-align: center; border-radius: 8px; background: rgba(0,0,0,0.2); position: relative; cursor: pointer; }
-        .file-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; }
+        .file-upload-wrapper { border: 2px dashed var(--border-glow); padding: 15px; text-align: center; border-radius: 8px; background: rgba(0,0,0,0.2); position: relative; cursor: pointer; transition: border-color 0.2s; }
+        .file-upload-wrapper.has-file { border-color: var(--neon-success); background: rgba(0, 255, 163, 0.05); }
+        .file-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 
-        .btn { padding: 14px; border-radius: 8px; border: none; font-family: 'Orbitron', sans-serif; font-weight: 900; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; width: 100%; }
+        /* NUEVO: Contenedor Cibernético de Barra de Progreso Real */
+        .progress-hud { background: rgba(0,0,0,0.4); border: 1px solid var(--text-neon); padding: 15px; border-radius: 8px; margin-top: 15px; box-shadow: 0 0 15px rgba(0, 245, 255, 0.1); }
+        .progress-labels { display: flex; justify-content: space-between; font-family: 'Orbitron', sans-serif; font-size: 12px; color: var(--text-neon); margin-bottom: 6px; }
+        .progress-bar-track { background: rgba(255,255,255,0.05); height: 8px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(0, 245, 255, 0.2); }
+        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon-primary), var(--neon-secondary)); transition: width 0.1s linear; }
+
+        .btn { padding: 14px; border-radius: 8px; border: none; font-family: 'Orbitron', sans-serif; font-weight: 900; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; width: 100%; cursor: pointer; }
         .btn-primary { background: linear-gradient(135deg, var(--neon-primary), #4512e6); box-shadow: 0 0 15px rgba(124, 77, 255, 0.4); }
+        .btn-primary:disabled { background: #1e1e2f; color: var(--text-muted); box-shadow: none; cursor: not-allowed; border: 1px solid var(--border-glow); }
         .btn-success { background: transparent; color: var(--neon-success); border: 1px solid var(--neon-success); }
         .btn-danger { background: transparent; color: var(--neon-danger); border: 1px solid var(--neon-danger); }
         .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glow); color: var(--text-muted); }
 
-        /* Barra de navegación inferior nativa móvil */
         .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: 70px; background: rgba(15, 23, 42, 0.95); border-top: 2px solid var(--border-glow); display: flex; justify-content: space-around; align-items: center; backdrop-filter: blur(20px); z-index: 1000; }
-        .nav-item { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'Orbitron', sans-serif; font-size: 10px; text-transform: uppercase; width: 45%; }
+        .nav-item { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'Orbitron', sans-serif; font-size: 10px; text-transform: uppercase; width: 45%; cursor: pointer; }
         .nav-item.active { color: var(--text-neon); text-shadow: 0 0 8px var(--text-neon); }
         .nav-item i { font-size: 22px; }
 
@@ -135,7 +140,7 @@
         
         .hidden { display: none !important; }
         .ri-spin { animation: ri-spin 1s infinite linear; }
-        @keyframes ri-spin { 100% { transform: rotate(300deg); } }
+        @keyframes ri-spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -233,24 +238,34 @@
                     
                     <div id="file-inputs-container">
                         <div class="form-group">
-                            <label>Imagen (Miniatura)</label>
-                            <div class="file-upload-wrapper">
+                            <label>Imagen (Miniatura - Max 5MB)</label>
+                            <div class="file-upload-wrapper" id="wrapper-img">
                                 <i class="ri-image-add-line" style="font-size:20px; color:var(--neon-secondary)"></i>
-                                <p style="font-size:12px; margin-top:4px;">Seleccionar foto de galería</p>
-                                <input type="file" id="up-img" accept="image/*">
+                                <p style="font-size:12px; margin-top:4px;" id="label-img">Seleccionar foto de galería</p>
+                                <input type="file" id="up-img" accept="image/*" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Archivo del Addon (.mcpack, .mcaddon, .zip)</label>
-                            <div class="file-upload-wrapper">
+                            <label>Archivo (.mcpack, .mcaddon, .zip - Max 40MB)</label>
+                            <div class="file-upload-wrapper" id="wrapper-file">
                                 <i class="ri-folder-zip-line" style="font-size:20px; color:var(--neon-success)"></i>
-                                <p style="font-size:12px; margin-top:4px;">Buscar archivo en el móvil</p>
-                                <input type="file" id="up-file" accept=".mcpack,.mcaddon,.zip">
+                                <p style="font-size:12px; margin-top:4px;" id="label-file">Buscar archivo en el móvil</p>
+                                <input type="file" id="up-file" accept=".mcpack,.mcaddon,.zip" required>
                             </div>
                         </div>
                     </div>
+
+                    <div id="upload-progress-container" class="progress-hud hidden">
+                        <div class="progress-labels">
+                            <span id="progress-status-text">SUBIENDO ARCHIVOS...</span>
+                            <span id="progress-percentage">0%</span>
+                        </div>
+                        <div class="progress-bar-track">
+                            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                        </div>
+                    </div>
                     
-                    <button type="submit" id="btn-form-submit" class="btn btn-primary" style="margin-top:10px;">Subir a la app</button>
+                    <button type="submit" id="btn-form-submit" class="btn btn-primary" style="margin-top:15px;">Subir a la app</button>
                 </form>
             </section>
 
@@ -306,8 +321,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
+        // CONSERVACIÓN ABSOLUTA DE TUS CREDENCIALES EXISTENTES
         const firebaseConfig = {
             apiKey: "AIzaSyA3M_4MT4gKRDc4Ic3xuLqdNOMAL-7VNWc",
             authDomain: "adon-hub.firebaseapp.com",
@@ -330,9 +346,10 @@
         let isSignUpMode = false;
         let isEditing = false;
 
+        // MANEJO DE VISTAS COMPATIBLE CON GITHUB PAGES
         window.switchView = function(viewId) {
             if(viewId === 'view-upload' && !currentUser) {
-                alert("🔒 Inicia sesión para poder publicar tus propios addons.");
+                alert("🔒 Debes iniciar sesión para publicar en AddonHub.");
                 openAuthTerminal();
                 return;
             }
@@ -449,6 +466,7 @@
             switchView('view-home');
         };
 
+        // ESCUCHA SÍNCRO DE FIRESTORE (OPTIMIZADA)
         onSnapshot(collection(db, "addons"), (snapshot) => {
             globalAddons = [];
             snapshot.forEach(docSnap => {
@@ -555,57 +573,142 @@
             } catch(e) { console.error(e); }
         });
 
-        // FORMULARIO: SUBIDA CON LA REPARACIÓN DE ADDDOC INCLUIDA
+
+        // OPTIMIZACIÓN VISUAL PARA ARCHIVOS EN MÓVILES
+        function setFileLabelListeners(inputId, wrapperId, labelId, defaultText) {
+            const input = document.getElementById(inputId);
+            if(input) {
+                input.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    const wrapper = document.getElementById(wrapperId);
+                    const label = document.getElementById(labelId);
+                    if(file) {
+                        label.innerText = file.name.length > 25 ? file.name.substring(0,22) + "..." : file.name;
+                        wrapper.classList.add('has-file');
+                    } else {
+                        label.innerText = defaultText;
+                        wrapper.classList.remove('has-file');
+                    }
+                });
+            }
+        }
+        setFileLabelListeners('up-img', 'wrapper-img', 'label-img', 'Seleccionar foto de galería');
+        setFileLabelListeners('up-file', 'wrapper-file', 'label-file', 'Buscar archivo en el móvil');
+
+
+        // PROMESA REUTILIZABLE PARA ENVIAR CON BARRA DE PROGRESO REAL
+        function uploadWithProgress(file, path) {
+            return new Promise((resolve, reject) => {
+                const storageRef = ref(storage, path);
+                const uploadTask = uploadBytesResumable(storageRef, file);
+
+                const progressContainer = document.getElementById('upload-progress-container');
+                const barFill = document.getElementById('progress-bar-fill');
+                const percentageLabel = document.getElementById('progress-percentage');
+
+                progressContainer.classList.remove('hidden');
+
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        barFill.style.width = progress + '%';
+                        percentageLabel.innerText = Math.round(progress) + '%';
+                    }, 
+                    (error) => { reject(error); }, 
+                    async () => {
+                        const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+                        resolve(downloadUrl);
+                    }
+                );
+            });
+        }
+
+
+        // NUEVO SISTEMA SEGURO Y PROTEGIDO DE PUBLICACIÓN
         document.getElementById('upload-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if(!currentUser) return;
 
             const submitBtn = document.getElementById('btn-form-submit');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = "<i class='ri-loader-4-line ri-spin'></i> SUBIENDO ARCHIVOS...";
-
-            const title = document.getElementById('up-title').value;
+            const title = document.getElementById('up-title').value.trim();
             const category = document.getElementById('up-category').value;
-            const mcVersion = document.getElementById('up-mcversion').value;
-            const description = document.getElementById('up-desc').value;
+            const mcVersion = document.getElementById('up-mcversion').value.trim();
+            const description = document.getElementById('up-desc').value.trim();
             const addonId = document.getElementById('form-addon-id').value;
 
+            // 1. VALIDACIÓN EN VACÍO DE CAMPOS TEXTO
+            if(!title || !mcVersion || !description) {
+                alert("❌ Todos los campos de texto son obligatorios.");
+                return;
+            }
+
+            // 2. DETECTAR SI ES EDICIÓN O NUEVA SUBIDA
+            const imgFile = document.getElementById('up-img').files[0];
+            const docFile = document.getElementById('up-file').files[0];
+
+            if(!isEditing && (!imgFile || !docFile)) {
+                alert("❌ Debes adjuntar la miniatura y el archivo correspondiente.");
+                return;
+            }
+
+            // 3. CONTROL DE DUPLICADOS LOCALES ANTES DE SUBIR A LA RED
+            if(!isEditing) {
+                const isDuplicate = globalAddons.some(addon => addon.title.toLowerCase() === title.toLowerCase());
+                if(isDuplicate) {
+                    alert("⚠️ Ya existe un Addon registrado con este nombre exacto. Cambia el título para evitar colisiones.");
+                    return;
+                }
+            }
+
+            // 4. VALIDACIONES DE ARCHIVO (FORMATOS Y PESO)
+            if(imgFile) {
+                if(imgFile.size > 5 * 1024 * 1024) { // Max 5MB
+                    alert("❌ La imagen sobrepasa el límite máximo permitido (5MB).");
+                    return;
+                }
+            }
+
+            if(docFile) {
+                const extension = docFile.name.split('.').pop().toLowerCase();
+                const allowedExtensions = ['mcpack', 'mcaddon', 'zip'];
+                if(!allowedExtensions.includes(extension)) {
+                    alert("❌ Formato inválido. Solo se admiten archivos .mcpack, .mcaddon o .zip");
+                    return;
+                }
+                if(docFile.size > 40 * 1024 * 1024) { // Max 40MB
+                    alert("❌ El paquete de datos excede los 40MB reglamentarios.");
+                    return;
+                }
+            }
+
+            // DESHABILITAR CONTROLES PARA EVITAR DUPLICACIÓN POR DOBLE TAP
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = "<i class='ri-loader-4-line ri-spin'></i> TRANSMITIENDO DATOS...";
+
             try {
+                let imageUrl = isEditing ? null : "";
+                let fileUrl = isEditing ? null : "";
+
+                // Cambiar el label de estado
+                document.getElementById('progress-status-text').innerText = "PROCESANDO MINIATURA...";
+                if(imgFile) {
+                    imageUrl = await uploadWithProgress(imgFile, `previews/${Date.now()}_${imgFile.name}`);
+                }
+
+                document.getElementById('progress-status-text').innerText = "SUBIENDO ARCHIVO MCPACK/ZIP...";
+                if(docFile) {
+                    fileUrl = await uploadWithProgress(docFile, `addons/${Date.now()}_${docFile.name}`);
+                }
+
                 if(isEditing) {
                     const updateData = { title, category, minecraftVersion: mcVersion, description };
-                    
-                    const imgFile = document.getElementById('up-img').files[0];
-                    if(imgFile) {
-                        const imgSnap = await uploadBytes(ref(storage, `previews/${Date.now()}_${imgFile.name}`), imgFile);
-                        updateData.imageUrl = await getDownloadURL(imgSnap.ref);
-                    }
-
-                    const docFile = document.getElementById('up-file').files[0];
-                    if(docFile) {
-                        const fileSnap = await uploadBytes(ref(storage, `addons/${Date.now()}_${docFile.name}`), docFile);
-                        updateData.fileUrl = await getDownloadURL(fileSnap.ref);
-                    }
+                    if(imageUrl) updateData.imageUrl = imageUrl;
+                    if(fileUrl) updateData.fileUrl = fileUrl;
 
                     await updateDoc(doc(db, "addons", addonId), updateData);
-                    alert("¡Addon editado con éxito!");
+                    alert("🛰️ ¡Matriz de datos actualizada con éxito!");
                 } else {
-                    const imgFile = document.getElementById('up-img').files[0];
-                    const docFile = document.getElementById('up-file').files[0];
-
-                    if(!imgFile || !docFile) {
-                        alert("Por favor, selecciona tanto la imagen como el archivo.");
-                        submitBtn.disabled = false;
-                        submitBtn.innerText = "Subir a la app";
-                        return;
-                    }
-
-                    const imgSnap = await uploadBytes(ref(storage, `previews/${Date.now()}_${imgFile.name}`), imgFile);
-                    const imageUrl = await getDownloadURL(imgSnap.ref);
-
-                    const fileSnap = await uploadBytes(ref(storage, `addons/${Date.now()}_${docFile.name}`), docFile);
-                    const fileUrl = await getDownloadURL(fileSnap.ref);
-
-                    // ARREGLADO: addDoc nativo asignando IDs autogenerados sin fallas
+                    // ESCRITURA CON ADDdoc EVITANDO FALLOS DE IDENTIFICADORES VÁLIDOS
                     await addDoc(collection(db, "addons"), {
                         title, category, minecraftVersion: mcVersion, description, imageUrl, fileUrl,
                         authorId: currentUser.uid,
@@ -613,15 +716,16 @@
                         downloads: 0, likes: 0,
                         createdAt: new Date().toISOString()
                     });
-                    alert("¡Addon publicado correctamente!");
+                    alert("🚀 ¡Addon inyectado correctamente en el servidor global!");
                 }
                 switchView('view-home');
             } catch(err) {
-                console.error(err);
-                alert("Fallo al procesar el addon en el almacenamiento remoto.");
+                console.error("Fallo de subida: ", err);
+                alert("❌ Error crítico en los servidores de almacenamiento. Revisa tu conexión de datos.");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Subir a la app";
+                document.getElementById('upload-progress-container').classList.add('hidden');
             }
         });
 
@@ -663,6 +767,12 @@
             document.getElementById('btn-form-submit').innerText = "Subir a la app";
             document.getElementById('up-img').required = true;
             document.getElementById('up-file').required = true;
+            
+            document.getElementById('wrapper-img').classList.remove('has-file');
+            document.getElementById('label-img').innerText = 'Seleccionar foto de galería';
+            document.getElementById('wrapper-file').classList.remove('has-file');
+            document.getElementById('label-file').innerText = 'Buscar archivo en el móvil';
+            document.getElementById('upload-progress-container').classList.add('hidden');
         }
     </script>
 </body>
