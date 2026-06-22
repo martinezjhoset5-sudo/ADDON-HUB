@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AddonHub // NEXUS-CORE-AUTH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-matrix: #030712;
+            --panel-bg: rgba(15, 23, 42, 0.75);
+            --text-neon: #00f5ff;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --neon-primary: #7c4dff;
+            --neon-secondary: #00e5ff;
+            --neon-success: #00ffa3;
+            --neon-danger: #ff0055;
+            --border-glow: rgba(0, 245, 255, 0.15);
+            --cyber-grid: linear-gradient(rgba(0, 245, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 245, 255, 0.02) 1px, transparent 1px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Rajdhani', sans-serif; letter-spacing: 0.5px; }
+        body { background-color: var(--bg-matrix); background-image: var(--cyber-grid); background-size: 30px 30px; color: var(--text-main); padding-bottom: 95px; min-height: 100vh; overflow-x: hidden; }
+        .app-container { max-width: 850px; margin: 0 auto; position: relative; }
+
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: var(--panel-bg); border-bottom: 2px solid var(--text-neon); position: sticky; top: 0; z-index: 999; backdrop-filter: blur(16px); }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 900; text-transform: uppercase; text-shadow: 0 0 10px var(--text-neon); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        
+        .user-profile-btn { background: none; border: 2px solid var(--neon-secondary); border-radius: 50%; width: 42px; height: 42px; overflow: hidden; cursor: pointer; box-shadow: 0 0 10px rgba(0, 229, 255, 0.3); display: flex; align-items: center; justify-content: center; color: var(--neon-secondary); font-size: 20px; }
+        .user-profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+        .search-area { display: flex; gap: 10px; margin: 25px 20px; }
+        .search-bar { display: flex; align-items: center; background: var(--panel-bg); padding: 14px 18px; border-radius: 0 12px 0 12px; border: 1px solid var(--border-glow); flex-grow: 1; }
+        .search-bar input { background: transparent; border: none; color: var(--text-main); margin-left: 12px; width: 100%; outline: none; font-size: 16px; }
+        .sort-select { background: var(--panel-bg); border: 1px solid var(--border-glow); color: var(--text-neon); padding: 0 15px; border-radius: 0 12px 0 12px; font-family: 'Orbitron', sans-serif; font-size: 12px; outline: none; cursor: pointer; }
+
+        .categories { display: flex; gap: 10px; padding: 0 20px 25px 20px; overflow-x: auto; scrollbar-width: none; }
+        .badge { background: rgba(255, 255, 255, 0.02); color: var(--text-muted); padding: 6px 20px; border-radius: 4px; font-size: 15px; font-weight: 600; text-transform: uppercase; white-space: nowrap; cursor: pointer; border: 1px solid var(--border-glow); transition: all 0.25s; }
+        .badge.active { background: var(--neon-primary); color: #fff; border-color: var(--neon-primary); box-shadow: 0 0 15px var(--neon-primary); }
+
+        h2, h3 { font-family: 'Orbitron', sans-serif; padding: 0 20px; font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; color: var(--text-muted); display: flex; align-items: center; gap: 10px; }
+        
+        .addon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; padding: 20px; }
+        .addon-card { background: var(--panel-bg); border: 1px solid var(--border-glow); border-radius: 8px; overflow: hidden; backdrop-filter: blur(10px); cursor: pointer; transition: all 0.3s; }
+        .addon-card:hover { transform: translateY(-5px); border-color: var(--neon-secondary); box-shadow: 0 10px 25px rgba(0, 245, 255, 0.15); }
+        .addon-card img { width: 100%; height: 130px; object-fit: cover; }
+        .addon-card-body { padding: 14px; border-top: 1px solid var(--border-glow); }
+        .addon-card-body h4 { font-family: 'Orbitron', sans-serif; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-stats { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+
+        .hud-metrics { display: flex; gap: 15px; margin-bottom: 20px; }
+        .hud-box { background: rgba(0,0,0,0.2); border: 1px solid var(--border-glow); padding: 10px 15px; border-radius: 4px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .hud-box.clickable { cursor: pointer; transition: all 0.2s; }
+        .hud-box.clickable:hover { border-color: var(--neon-primary); background: rgba(124,77,255,0.1); }
+
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .form-group label { font-family: 'Orbitron', sans-serif; font-size: 12px; text-transform: uppercase; color: var(--neon-secondary); }
+        input[type="text"], input[type="email"], input[type="password"], textarea, select { width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-glow); color: var(--text-main); border-radius: 4px; outline: none; font-size: 15px; }
+        
+        .btn { padding: 14px; border-radius: 4px; border: none; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: 900; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; color: white; }
+        .btn-primary { background: linear-gradient(135deg, var(--neon-primary), #4512e6); box-shadow: 0 0 20px rgba(124, 77, 255, 0.4); }
+        .btn-success { background: transparent; color: var(--neon-success); border: 1px solid var(--neon-success); }
+        .btn-success:hover { background: var(--neon-success); color: #000; }
+        .btn-danger { background: transparent; color: var(--neon-danger); border: 1px solid var(--neon-danger); }
+        .btn-danger:hover { background: var(--neon-danger); color: white; }
+        .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glow); color: var(--text-muted); }
+        .btn-block { width: 100%; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 850px; height: 75px; background: var(--panel-bg); border-top: 2px solid var(--border-glow); display: flex; justify-content: space-around; align-items: center; backdrop-filter: blur(20px); z-index: 1000; }
+        .nav-item { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 5px; font-family: 'Orbitron', sans-serif; font-size: 11px; text-transform: uppercase; cursor: pointer; width: 30%; }
+        .nav-item.active { color: var(--text-neon); text-shadow: 0 0 10px var(--text-neon); }
+        .nav-item i { font-size: 24px; }
+
+        .modal-terminal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3,7,18,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .terminal-box { background: #0b0f19; border: 2px solid var(--text-neon); width: 90%; max-width: 450px; border-radius: 0 16px 0 16px; padding: 25px; box-shadow: 0 0 30px rgba(0,245,255,0.2); }
+        .terminal-header { font-family: 'Orbitron', sans-serif; color: var(--text-neon); font-size: 16px; border-bottom: 1px solid var(--border-glow); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+        
+        .hidden { display: none !important; }
+        .ri-spin { animation: ri-spin 1s infinite linear; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <div class="logo" onclick="switchView('view-home')"><i class="ri-pulse-line"></i> AddonHub // OS</div>
+            <button class="user-profile-btn" id="header-avatar-btn" onclick="openAuthTerminal()">
+                <i class="ri-user-orbit-line"></i>
+            </button>
+        </header>
+
+        <main id="app-content">
+            
+            <section id="view-home" class="view">
+                <div class="search-area">
+                    <div class="search-bar">
+                        <i class="ri-terminal-box-line"></i>
+                        <input type="text" id="search-input" placeholder="ACCEDER_AL_NEXUS: buscar por nombre...">
+                    </div>
+                    <select id="sort-select" class="sort-select">
+                        <option value="new">MÁS RECIENTES</option>
+                        <option value="popular">MÁS POPULARES</option>
+                    </select>
+                </div>
+                
+                <div class="categories" id="category-filter-container">
+                    <span class="badge active" data-category="all">Todos</span>
+                    <span class="badge" data-category="Mundos">Mundos</span>
+                    <span class="badge" data-category="Texturas">Texturas</span>
+                    <span class="badge" data-category="Addons">Addons</span>
+                </div>
+
+                <h2><i class="ri-radar-line"></i> TRANSMISIONES_RECIENTES</h2>
+                <div class="addon-grid" id="addon-container"></div>
+            </section>
+
+            <section id="view-detail" class="view hidden" style="padding:20px;">
+                <button class="btn btn-secondary" style="padding:8px 15px; margin-bottom:20px;" onclick="switchView('view-home')"><i class="ri-arrow-left-line"></i> Volver</button>
+                
+                <div style="display:flex; gap:20px; align-items:center; margin-bottom:20px;">
+                    <img id="detail-img" src="" style="width:110px; height:110px; object-fit:cover; border:2px solid var(--neon-secondary); border-radius:6px;">
+                    <div>
+                        <h2 id="detail-title" style="padding:0; color:white; font-size:24px;">Título</h2>
+                        <span style="color:var(--text-muted); font-size:14px;">Versión MC: <strong id="detail-mcversion">1.20</strong></span><br>
+                        <span style="color:var(--text-muted); font-size:14px;">Sector: <strong id="detail-category">Addons</strong></span>
+                    </div>
+                </div>
+
+                <div class="hud-metrics">
+                    <div class="hud-box clickable" id="btn-like-trigger">
+                        <i class="ri-heart-fill" style="color:var(--neon-danger)"></i> <span>Likes: <strong id="detail-likes">0</strong></span>
+                    </div>
+                    <div class="hud-box">
+                        <i class="ri-download-2-line" style="color:var(--neon-secondary)"></i> <span>Descargas: <strong id="detail-downloads">0</strong></span>
+                    </div>
+                </div>
+
+                <p id="detail-desc" style="background:rgba(0,0,0,0.3); padding:15px; border-radius:4px; border:1px solid var(--border-glow); line-height:1.6; margin-bottom:15px;"></p>
+                <div id="detail-author" style="font-size:13px; color:var(--text-muted); margin-bottom:20px;"></div>
+
+                <button id="btn-download-action" class="btn btn-success btn-block"><i class="ri-download-cloud-line"></i> Extraer Paquete Binario</button>
+                
+                <div id="author-controls" class="hidden" style="margin-top:20px; display:flex; gap:10px;">
+                    <button class="btn btn-secondary" style="flex:1" id="btn-edit-trigger"><i class="ri-edit-line"></i> Modificar Datos</button>
+                    <button class="btn btn-danger" style="flex:1" id="btn-delete-trigger"><i class="ri-delete-bin-line"></i> Purgar Archivo</button>
+                </div>
+            </section>
+
+            <section id="view-upload" class="view hidden upload-container">
+                <h2 id="upload-view-title"><i class="ri-cloud-upload-line"></i> Inyectar_Nuevo_Addon.exe</h2>
+                <br>
+                <form id="upload-form">
+                    <input type="hidden" id="form-addon-id">
+                    <div class="form-group">
+                        <label>Nombre del Addon</label>
+                        <input type="text" id="up-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sector / Categoría</label>
+                        <select id="up-category" required>
+                            <option value="Mundos">Mundos</option>
+                            <option value="Texturas">Texturas</option>
+                            <option value="Addons">Addons</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Versión de Minecraft Soportada</label>
+                        <input type="text" id="up-mcversion" placeholder="Ej: v1.21.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Manifiesto de Especificaciones (Descripción)</label>
+                        <textarea id="up-desc" required></textarea>
+                    </div>
+                    <div id="file-inputs-container">
+                        <div class="form-group">
+                            <label>Imagen del Addon (Miniatura)</label>
+                            <input type="file" id="up-img" accept="image/*">
+                        </div>
+                        <div class="form-group">
+                            <label>Carga Útil (Archivo .mcpack / .mcaddon / .zip)</label>
+                            <input type="file" id="up-file" accept=".mcpack,.mcaddon,.zip">
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-form-submit" class="btn btn-primary btn-block">Transmitir Datos a la Red</button>
+                </form>
+            </section>
+
+        </main>
+
+        <div id="auth-terminal" class="modal-terminal hidden">
+            <div class="terminal-box">
+                <div class="terminal-header">
+                    <span id="term-title">ACCESO_AL_NEXUS // SECURE_AUTH</span>
+                    <i class="ri-close-line" style="cursor:pointer;" onclick="closeAuthTerminal()"></i>
+                </div>
+                
+                <div id="auth-form-gate">
+                    <form id="auth-core-form">
+                        <div class="form-group hidden" id="fg-username">
+                            <label>Nombre de Operador (Username)</label>
+                            <input type="text" id="auth-username">
+                        </div>
+                        <div class="form-group">
+                            <label>Correo Electrónico</label>
+                            <input type="email" id="auth-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Clave de Encriptación</label>
+                            <input type="password" id="auth-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="btn-auth-submit">Iniciar Sesión</button>
+                    </form>
+                    <p style="font-size:13px; text-align:center; margin-top:15px; color:var(--text-muted)">
+                        <span id="auth-switch-text">¿No tienes credenciales?</span> 
+                        <a href="#" id="auth-switch-link" style="color:var(--text-neon); text-decoration:none;">Crear Cuenta</a>
+                    </p>
+                </div>
+
+                <div id="auth-profile-gate" class="hidden">
+                    <div style="text-align:center; margin-bottom:20px;">
+                        <img id="profile-panel-img" src="" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--neon-success); margin-bottom:10px;">
+                        <h3 id="profile-panel-name" style="padding:0; color:white;">Operador</h3>
+                        <p id="profile-panel-email" style="font-size:14px; color:var(--text-muted);"></p>
+                    </div>
+                    <button class="btn btn-danger btn-block" onclick="triggerSignOut()">Cerrar Frecuencia (Sign Out)</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <button id="nav-home" onclick="switchView('view-home')" class="nav-item active"><i class="ri-scan-2-line"></i><span>Explorar</span></button>
+            <button id="nav-upload" onclick="switchView('view-upload')" class="nav-item"><i class="ri-terminal-window-line"></i><span>Publicar</span></button>
+        </nav>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3M_4MT4gKRDc4Ic3xuLqdNOMAL-7VNWc",
+            authDomain: "adon-hub.firebaseapp.com",
+            projectId: "adon-hub",
+            storageBucket: "adon-hub.firebasestorage.app",
+            messagingSenderId: "704577379579",
+            appId: "1:704577379579:web:879f53f392c75df986a45e",
+            measurementId: "G-3P8XZ2PN62"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        let currentUser = null;
+        let globalAddons = [];
+        let activeAddonId = null;
+        let selectedCategory = "all";
+        let isSignUpMode = false;
+        let isEditing = false;
+
+        window.switchView = function(viewId) {
+            if(viewId === 'view-upload' && !currentUser) {
+                alert("🔒 ACCESO DENEGADO: Identifica tu firma cuántica en el sistema para inyectar paquetes.");
+                openAuthTerminal();
+                return;
+            }
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            if(viewId === 'view-home') document.getElementById('nav-home').classList.add('active');
+            if(viewId === 'view-upload') {
+                document.getElementById('nav-upload').classList.add('active');
+                resetUploadForm();
+            }
+        };
+
+        // ESCUCHA FIEL DEL NÚCLEO AUTH (onAuthStateChanged)
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            const avatarBtn = document.getElementById('header-avatar-btn');
+            if(user) {
+                avatarBtn.innerHTML = `<img src="${user.photoURL || 'https://api.dicebear.com/7.x/bottts/svg?seed='+user.uid}" alt="Profile">`;
+                // Si el usuario acaba de loguearse y está en el login, lo mandamos al home
+                if (!document.getElementById('auth-terminal').classList.contains('hidden') && !isSignUpMode) {
+                    closeAuthTerminal();
+                }
+            } else {
+                avatarBtn.innerHTML = `<i class="ri-user-orbit-line"></i>`;
+                if(!document.getElementById('view-upload').classList.contains('hidden')) {
+                    switchView('view-home');
+                }
+            }
+        });
+
+        window.openAuthTerminal = function() {
+            document.getElementById('auth-terminal').classList.remove('hidden');
+            if(currentUser) {
+                document.getElementById('term-title').innerText = "OPERADOR_DETECTADO // PROTOCOLO_PERFIL";
+                document.getElementById('auth-form-gate').classList.add('hidden');
+                document.getElementById('auth-profile-gate').classList.remove('hidden');
+                document.getElementById('profile-panel-img').src = currentUser.photoURL || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + currentUser.uid;
+                document.getElementById('profile-panel-name').innerText = currentUser.displayName || "Operador Activo";
+                document.getElementById('profile-panel-email').innerText = currentUser.email;
+            } else {
+                document.getElementById('term-title').innerText = "ACCESO_AL_NEXUS // SECURE_AUTH";
+                document.getElementById('auth-form-gate').classList.remove('hidden');
+                document.getElementById('auth-profile-gate').classList.add('hidden');
+                setAuthMode(false);
+            }
+        };
+
+        window.closeAuthTerminal = function() { document.getElementById('auth-terminal').classList.add('hidden'); };
+
+        const authLink = document.getElementById('auth-switch-link');
+        authLink.addEventListener('click', (e) => { e.preventDefault(); setAuthMode(!isSignUpMode); });
+
+        function setAuthMode(signUp) {
+            isSignUpMode = signUp;
+            if(signUp) {
+                document.getElementById('fg-username').classList.remove('hidden');
+                document.getElementById('btn-auth-submit').innerText = "Registrar Nuevo Operador";
+                document.getElementById('auth-switch-text').innerText = "¿Ya posees cuenta?";
+                authLink.innerText = "Iniciar Sesión";
+            } else {
+                document.getElementById('fg-username').classList.add('hidden');
+                document.getElementById('btn-auth-submit').innerText = "Iniciar Sesión";
+                document.getElementById('auth-switch-text').innerText = "¿No tienes credenciales?";
+                authLink.innerText = "Crear Cuenta";
+            }
+        }
+
+        // CONTROL ASÍNCRONO REMODELADO (LOGIN Y REGISTRO DIRECTO)
+        document.getElementById('auth-core-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const submitBtn = document.getElementById('btn-auth-submit');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerText = "PROCESANDO_FIRMA...";
+
+            try {
+                if(isSignUpMode) {
+                    const username = document.getElementById('auth-username').value.trim();
+                    if(!username) { alert("Especifica un nombre de operador."); submitBtn.disabled = false; return; }
+
+                    // 1. Crear en Auth
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const defaultAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${userCredential.user.uid}`;
+                    
+                    // 2. Modificar Perfil Local
+                    await updateProfile(userCredential.user, { displayName: username, photoURL: defaultAvatar });
+                    
+                    // 3. Crear Registro Exacto en Firestore
+                    await setDoc(doc(db, "users", userCredential.user.uid), {
+                        uid: userCredential.user.uid,
+                        username: username,
+                        email: email,
+                        photoURL: defaultAvatar,
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    alert("Firma integrada en la Red Central. Cuenta creada.");
+                } else {
+                    // Login Puro por Firebase
+                    await signInWithEmailAndPassword(auth, email, password);
+                }
+                
+                closeAuthTerminal();
+                document.getElementById('auth-core-form').reset();
+                switchView('view-home'); // Forzar retorno seguro a la central
+            } catch(err) {
+                console.error("Fallo de Autenticación:", err.code);
+                // Mapear errores reales de Firebase para depuración
+                if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
+                    alert("❌ ACCESO DENEGADO: Credenciales incorrectas.");
+                } else if (err.code === "auth/weak-password") {
+                    alert("❌ SEGURIDAD DEBIL: La clave debe tener mínimo 6 caracteres.");
+                } else if (err.code === "auth/email-already-in-use") {
+                    alert("❌ REGISTRO DUPLICADO: Este correo ya está enlazado a otro operador.");
+                } else {
+                    alert(`❌ FALLO DE RED: ${err.message}`);
+                }
+            } finally { 
+                submitBtn.disabled = false; 
+                submitBtn.innerText = isSignUpMode ? "Registrar Nuevo Operador" : "Iniciar Sesión";
+            }
+        });
+
+        window.triggerSignOut = async function() {
+            await signOut(auth);
+            closeAuthTerminal();
+            switchView('view-home');
+        };
+
+        // ESCUCHA SÍNCRO DE ARCHIVOS EN LA RED (FIRESTORE)
+        onSnapshot(collection(db, "addons"), (snapshot) => {
+            globalAddons = [];
+            snapshot.forEach(docSnap => {
+                globalAddons.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            renderGrid();
+            if(activeAddonId) {
+                const refreshed = globalAddons.find(a => a.id === activeAddonId);
+                if(refreshed) updateDetailFields(refreshed);
+            }
+        });
+
+        // FILTROS Y BÚSQUEDAS
+        document.querySelectorAll('#category-filter-container .badge').forEach(badge => {
+            badge.addEventListener('click', () => {
+                document.querySelectorAll('#category-filter-container .badge').forEach(b => b.classList.remove('active'));
+                badge.classList.add('active');
+                selectedCategory = badge.getAttribute('data-category');
+                renderGrid();
+            });
+        });
+        document.getElementById('search-input').addEventListener('input', renderGrid);
+        document.getElementById('sort-select').addEventListener('change', renderGrid);
+
+        function renderGrid() {
+            const container = document.getElementById('addon-container');
+            if(!container) return;
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const order = document.getElementById('sort-select').value;
+
+            let result = globalAddons.filter(a => {
+                const matchName = a.title ? a.title.toLowerCase().includes(search) : false;
+                const matchCat = (selectedCategory === "all" || a.category === selectedCategory);
+                return matchName && matchCat;
+            });
+
+            if(order === "popular") {
+                result.sort((a,b) => (b.likes || 0) - (a.likes || 0));
+            } else {
+                result.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            }
+
+            container.innerHTML = '';
+            if(result.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; opacity:0.5; padding:20px;">[ Red vacía o sin transmisiones de datos ]</p>';
+                return;
+            }
+
+            result.forEach(a => {
+                const card = document.createElement('div');
+                card.className = 'addon-card';
+                card.onclick = () => openDetail(a);
+                card.innerHTML = `
+                    <img src="${a.imageUrl || 'https://via.placeholder.com/150'}" alt="preview">
+                    <div class="addon-card-body">
+                        <h4>${a.title}</h4>
+                        <span style="font-size:11px; color:var(--text-neon)">${a.category} // MC ${a.minecraftVersion}</span>
+                        <div class="card-stats">
+                            <span><i class="ri-heart-fill"></i> ${a.likes || 0}</span>
+                            <span><i class="ri-download-2-line"></i> ${a.downloads || 0}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openDetail(addon) {
+            activeAddonId = addon.id;
+            updateDetailFields(addon);
+            switchView('view-detail');
+        }
+
+        function updateDetailFields(addon) {
+            document.getElementById('detail-img').src = addon.imageUrl;
+            document.getElementById('detail-title').innerText = addon.title;
+            document.getElementById('detail-mcversion').innerText = addon.minecraftVersion;
+            document.getElementById('detail-category').innerText = addon.category;
+            document.getElementById('detail-desc').innerText = addon.description;
+            document.getElementById('detail-likes').innerText = addon.likes || 0;
+            document.getElementById('detail-downloads').innerText = addon.downloads || 0;
+            document.getElementById('detail-author').innerText = `Por: ${addon.authorName || 'Operador Anónimo'}`;
+
+            const controls = document.getElementById('author-controls');
+            if(currentUser && addon.authorId === currentUser.uid) {
+                controls.classList.remove('hidden');
+            } else {
+                controls.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('btn-like-trigger').addEventListener('click', async () => {
+            if(!currentUser) { alert("🔒 Validación requerida para emitir votos de estabilidad."); return; }
+            try {
+                await updateDoc(doc(db, "addons", activeAddonId), { likes: increment(1) });
+            } catch(e) { console.error(e); }
+        });
+
+        document.getElementById('btn-download-action').addEventListener('click', async () => {
+            const target = globalAddons.find(a => a.id === activeAddonId);
+            if(!target) return;
+            try {
+                await updateDoc(doc(db, "addons", activeAddonId), { downloads: increment(1) });
+                window.open(target.fileUrl, '_blank');
+            } catch(e) { console.error(e); }
+        });
+
+        // ENVÍO DE DATOS (SUBIDA Y EDICIÓN COMPLETA)
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!currentUser) return;
+
+            const submitBtn = document.getElementById('btn-form-submit');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = "<i class='ri-loader-4-line ri-spin'></i> SUBIENDO_PAQUETE...";
+
+            const title = document.getElementById('up-title').value;
+            const category = document.getElementById('up-category').value;
+            const mcVersion = document.getElementById('up-mcversion').value;
+            const description = document.getElementById('up-desc').value;
+            const addonId = document.getElementById('form-addon-id').value;
+
+            try {
+                if(isEditing) {
+                    const updateData = { title, category, minecraftVersion: mcVersion, description };
+                    
+                    const imgFile = document.getElementById('up-img').files[0];
+                    if(imgFile) {
+                        const imgSnap = await uploadBytes(ref(storage, `previews/${Date.now()}_${imgFile.name}`), imgFile);
+                        updateData.imageUrl = await getDownloadURL(imgSnap.ref);
+                    }
+
+                    const docFile = document.getElementById('up-file').files[0];
+                    if(docFile) {
+                        const fileSnap = await uploadBytes(ref(storage, `addons/${Date.now()}_${docFile.name}`), docFile);
+                        updateData.fileUrl = await getDownloadURL(fileSnap.ref);
+                    }
+
+                    await updateDoc(doc(db, "addons", addonId), updateData);
+                    alert("Matriz modificada.");
+                } else {
+                    const imgFile = document.getElementById('up-img').files[0];
+                    const docFile = document.getElementById('up-file').files[0];
+
+                    if(!imgFile || !docFile) {
+                        alert("Ambos archivos son mandatorios.");
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = "Transmitir Datos a la Red";
+                        return;
+                    }
+
+                    const imgSnap = await uploadBytes(ref(storage, `previews/${Date.now()}_${imgFile.name}`), imgFile);
+                    const imageUrl = await getDownloadURL(imgSnap.ref);
+
+                    const fileSnap = await uploadBytes(ref(storage, `addons/${Date.now()}_${docFile.name}`), docFile);
+                    const fileUrl = await getDownloadURL(fileSnap.ref);
+
+                    // Insertar campos exactos solicitados
+                    await setDoc(doc(collection(db, "addons")), {
+                        title, category, minecraftVersion: mcVersion, description, imageUrl, fileUrl,
+                        authorId: currentUser.uid,
+                        authorName: currentUser.displayName || "Operador Anónimo",
+                        downloads: 0, likes: 0,
+                        createdAt: new Date().toISOString()
+                    });
+                    alert("Datos integrados.");
+                }
+                switchView('view-home');
+            } catch(err) {
+                console.error(err);
+                alert("Fallo crítico.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Transmitir Datos a la Red";
+            }
+        });
+
+        document.getElementById('btn-delete-trigger').addEventListener('click', async () => {
+            if(!activeAddonId || !confirm("☢️ ¿Destruir permanentemente este addon?")) return;
+            try {
+                await deleteDoc(doc(db, "addons", activeAddonId));
+                activeAddonId = null;
+                alert("Purgado.");
+                switchView('view-home');
+            } catch(e) { alert("Error al eliminar."); }
+        });
+
+        document.getElementById('btn-edit-trigger').addEventListener('click', () => {
+            const target = globalAddons.find(a => a.id === activeAddonId);
+            if(!target) return;
+
+            isEditing = true;
+            document.getElementById('upload-view-title').innerHTML = "<i class='ri-edit-box-line'></i> Reconfigurar_Addon.exe";
+            document.getElementById('form-addon-id').value = target.id;
+            document.getElementById('up-title').value = target.title;
+            document.getElementById('up-category').value = target.category;
+            document.getElementById('up-mcversion').value = target.minecraftVersion;
+            document.getElementById('up-desc').value = target.description;
+            
+            document.getElementById('btn-form-submit').innerText = "Aplicar Mutaciones";
+            document.getElementById('up-img').required = false;
+            document.getElementById('up-file').required = false;
+
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            document.getElementById('view-upload').classList.remove('hidden');
+        });
+
+        function resetUploadForm() {
+            isEditing = false;
+            document.getElementById('upload-form').reset();
+            document.getElementById('upload-view-title').innerHTML = "<i class='ri-cloud-upload-line'></i> Inyectar_Nuevo_Addon.exe";
+            document.getElementById('form-addon-id').value = "";
+            document.getElementById('btn-form-submit').innerText = "Transmitir Datos a la Red";
+            document.getElementById('up-img').required = true;
+            document.getElementById('up-file').required = true;
+        }
+    </script>
+</body>
+</html>
